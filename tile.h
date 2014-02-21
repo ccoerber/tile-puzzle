@@ -46,12 +46,13 @@ public:
     Token tokenAt(int pos) const;
 
     int getId() const { return _id; }
+    int getRotation() const { return _rotation; }
     void dump() const;
 
 private:
     Token _tokens[4];
-    int _rotation;
     int _id;
+    int _rotation;
 };
 
 #endif // TILE_H
