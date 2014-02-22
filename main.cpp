@@ -17,7 +17,7 @@ bool matchTiles(Tile* tile1, Tile* tile2, Tile* tile3, int pos1, int pos2, int p
 bool matchTokens(Token tok1, Token tok2);
 
 // Dumps an ascii representation of the current state of the solved puzzle
-void dumpTiles();
+void dumpSolutionList(bool solution = false);
 
 // Returns a string representation the token enum that is passed in
 const char* tokToStr(Token);
@@ -47,7 +47,7 @@ int main()
 
     	solvedStack.push_back(firstTile);
 
-    	for (int j = 0; j < 3; ++j) {
+    	for (int j = 0; j < 4; ++j) {
 
     		findNextMatch(1);
     		firstTile->rotate();
@@ -76,7 +76,6 @@ void findNextMatch(int tileNumber)
 		Tile* candidate = allTiles.front();
 		allTiles.pop();
 
-		int rotations = 4;
 		// check for match between latest solved tile and candidate
 		bool match = false;
 		if (tileNumber == 1 || tileNumber == 2) {
@@ -89,18 +88,20 @@ void findNextMatch(int tileNumber)
 		}
 		else if (tileNumber == 4 || tileNumber == 5 || tileNumber == 7 || tileNumber == 8) {
 
-			//match = (matchTiles(tile, candidate, 1, 3) && matchTiles(solvedStack.at(tileNumber - 3), candidate, 2, 0));
 			match = matchTiles(tile, candidate, solvedStack.at(tileNumber - 3), 1, 3, 2, 0);
 		}
 
+		// a match was found
     	if (match) {
 
+    		// put the matching tile on the solved stack
     		solvedStack.push_back(candidate);
 
     		if (allTiles.empty()){
-    			dumpTiles();
+    			dumpSolutionList(true);
     		}
     		else {
+    			dumpSolutionList();
     			findNextMatch(tileNumber + 1);
     		}
 
@@ -110,8 +111,6 @@ void findNextMatch(int tileNumber)
     	else {
     		allTiles.push(candidate);
     	}
-
-
 	}
 
 }
@@ -120,7 +119,6 @@ void findNextMatch(int tileNumber)
 // tile2 all the way around until match is found
 bool matchTiles(Tile* tile1, Tile* tile2, int pos1, int pos2)
 {
-
 	//printf("matchTiles(tile1: %d, tile2: %d, pos1: %d, pos2: %d)\n", tile1->getId(), tile2->getId(), pos1, pos2);
 
     int tries = 4;
@@ -167,27 +165,13 @@ bool matchTokens(Token tok1, Token tok2)
 
 }
 
-// Dumps an ascii representation of the current state of the solved puzzle
-void dumpTiles()
+// Dumps an ascii representation of the current state of the solved puzzle.  If solution
+// is set to TRUE, the solvedStack contains all tiles so mark as a solution to the puzzle.
+void dumpSolutionList(bool solution)
 {
-/*
-	std::stack<Tile*> temp;
+	if (solution) printf("SOLUTION: ");
 
-	printf("SOLUTION:\n");
-	while(!solvedStack.empty()){
-    	printf("Tile number: %d\n", solvedStack.back()->getId());
-    	temp.push(solvedStack.back());
-    	solvedStack.pop_back();
-    }
-
-	while(!temp.empty()){
-		solvedStack.push_back(temp.top());
-		temp.pop();
-	}
-*/
-
-	printf("SOLUTION: ");
-	for (int i = 0; i < solvedStack.size(); ++i) {
+	for (int i = 0; i < (int)solvedStack.size(); ++i) {
 		printf("%d(%d) ", solvedStack.at(i)->getId(), solvedStack.at(i)->getRotation());
 	}
 	printf("\n");
